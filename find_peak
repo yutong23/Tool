@@ -1,0 +1,44 @@
+import numpy as np
+from scipy.signal import find_peaks
+import pathlib
+import csv
+from numpy.lib.arraysetops import _setxor1d_dispatcher
+import scipy
+import scipy.stats as st
+
+def start(num, pen):
+    csv_file_path = str(pathlib.Path(__file__).parent.resolve()) + '/'+str(num)+'.csv'
+    val = []
+    aro = []
+    with open(csv_file_path) as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=',')
+        line_count = 0
+        for row in csv_reader:
+            if line_count == 0:
+                print(f'Column names are {", ".join(row)}')
+                line_count += 1
+            else:
+                val.append(float(row[10]))
+                aro.append(float(row[11]))
+                line_count += 1
+        
+    aro_abs = list(map(abs,aro))
+    peaks, _ = find_peaks(aro_abs, prominence=pen)
+    high = []
+    low = []
+    for i in peaks:
+        if aro[i] > 0:
+            high.append(i)
+        else:
+            low.append(i)
+    return high,low
+
+high_def, low_def = start(1,0.5) #default parameter for participant 1
+print(high_def)
+print(low_def)
+high_more, low_more = start(1,0.45) #see more parameter for participant 1
+print(high_more)
+print(low_more)
+high_less, low_less = start(1,0.6) #see less parameter for participant 1
+print(high_less)
+print(low_less)
